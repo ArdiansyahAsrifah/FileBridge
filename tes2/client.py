@@ -1,5 +1,5 @@
 from ftplib import FTP
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, redirect
 
 app = Flask(__name__)
 
@@ -34,14 +34,23 @@ def index():
     if request.method == 'POST':
         if 'upload_file' in request.files:
             file = request.files['upload_file']
+            if file.filename == '':
+                return render_template('index.html', error_message='Mohon pilih file yang ingin diunggah')
             file.save(file.filename)
             upload_file(file.filename)
-            return 'File {} berhasil diunggah ke server FTP.'.format(file.filename)
+            return render_template('uploaded.html')
         elif 'download_file' in request.form:
             file_name = request.form['download_file']
+            if file_name == '':
+                return render_template('index.html', error_message='Mohon masukkan nama file yang ingin diunduh')
             download_file(file_name)
-            return 'File {} berhasil diunduh dari server FTP.'.format(file_name)
+            return render_template('downloaded.html', file_name=file_name)
     return render_template('index.html')
+
+# Route setelah mengunggah file
+@app.route('/uploaded')
+def uploaded():
+    return render_template('uploaded.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
