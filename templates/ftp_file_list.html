@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>File Bridge - Daftar File FTP</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1d2026;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            font-size: 28px;
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        li {
+            background-color: #292d36;
+            padding: 10px 20px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            width: 400px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            position: relative;
+        }
+
+        .download-button {
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            display: inline-block;
+            background-color: #4caf50;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .download-button:hover {
+            background-color: #45a049;
+        }
+
+        .container {
+            width: 400px;
+            margin: 20px auto;
+            text-align: center;
+        }
+
+        .back-button {
+            display: inline-block;
+            background-color: #347dff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .back-button:hover {
+            background-color: #1e7be6;
+        }
+
+        .download-container {
+            width: 100%;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+    </style>
+</head>
+<body>
+    <h1>Daftar File FTP</h1>
+    <ul>
+        {% for file_name in file_list %}
+            <li>
+                {{ file_name }}
+                <div class="download-container">
+                    <a href="/download/{{ file_name }}" class="download-button">Download</a>
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <div class="container">
+        <a href="/" class="back-button">Kembali</a>
+    </div>
+</body>
+</html>
