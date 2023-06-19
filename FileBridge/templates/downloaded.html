@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Downloaded - FTP Client</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/izitoast/dist/css/iziToast.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/izitoast/dist/js/iziToast.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1d2026;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            font-size: 28px;
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .container {
+            width: 400px;
+            margin: 40px auto;
+        }
+
+        .message {
+            background-color: #292d36;
+            padding: 20px;
+            border-radius: 5px;
+        }
+
+        .success-message {
+            color: #70e64b;
+            text-align: center;
+        }
+
+        .back-link {
+        display: block;
+        text-align: center;
+        margin-top: 20px;
+        color: #fff;
+        text-decoration: none;
+        background-color: #347dff;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-size: 16px;
+        transition: background-color 0.3s ease;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+        }
+
+        .back-link:hover {
+            background-color: #1e7be6;
+        }
+    </style>
+</head>
+<body>
+    <h1>File berhasil diunduh dari server FTP.</h1>
+    <div class="container">
+        <div class="message success-message">
+            <a class="back-link" href="/">Back to Home</a>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            iziToast.success({
+                title: 'Success',
+                message: 'File berhasil diunduh!',
+                position: 'topRight',
+                timeout: 5000,
+            });
+        });
+    </script>
+</body>
+</html>
