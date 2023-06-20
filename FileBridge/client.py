@@ -86,11 +86,12 @@ def download_file(file_name):
 @login_required_custom
 def get_file_list():
     ftp = login_ftp(session["host"],session["port"],session["user"],session["password"])
-    
-    
-
-    files = ftp.nlst()
-    ftp.quit()
+    try:
+        files = ftp.nlst()
+        ftp.quit()
+    except:
+        logout()
+        return redirect(url_for('index'))
 
     return files
 
