@@ -10,11 +10,10 @@ app = Flask(__name__)
 app.secret_key = "123test"
 
 # Konfigurasi FTP
-ftp_host = '127.0.0.1'
-ftp_user = 'test'
-ftp_password = '123'
-ftp_port = 2121
-
+# ftp_host = '127.0.0.1'
+# ftp_user = 'test'
+# ftp_password = '123'
+# ftp_port = 2121
 # session["ftp"] = None
 
 def login_ftp(host,port,user,password):
@@ -143,8 +142,8 @@ def login():
         session["password"] = str(request.form["password"])
         session["port"] = int(request.form["port"])
         
-        for i in session:
-            print(session[i])
+        # for i in session:
+        #     print(session[i])
         
         ftp = login_ftp(session["host"],session["port"],session["user"],session["password"])
         
@@ -185,8 +184,8 @@ def delete_file(file_name):
 @login_required_custom
 def rename_file(file_name):
     ftp = login_ftp(session["host"], session["port"], session["user"], session["password"])
-    part = file_name.split('.')[1]
-    print(part)
+    part = file_name.split('.')[-1]
+    # print(part)
 
     if ftp:
         if request.method == 'POST':
