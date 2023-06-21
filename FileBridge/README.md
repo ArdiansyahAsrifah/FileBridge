@@ -16,7 +16,7 @@
 
 **app.secret_key = "123test"**: Mengatur kunci rahasia untuk melindungi data sesi pengguna.
 
-# Konfigurasi FTP:
+## Konfigurasi FTP:
 
 **ftp_host, ftp_user, ftp_password, ftp_port**: Variabel yang menyimpan informasi konfigurasi server FTP seperti alamat host, username, password, dan port.
 
@@ -65,6 +65,23 @@ Digunakan untuk menampilkan daftar file di server FTP.
 Fungsi get_file_list() dipanggil untuk mendapatkan daftar file di server FTP.
 Jalur saat ini di server FTP juga ditampilkan.
 Daftar file dan jalur saat ini ditampilkan menggunakan template HTML.
+
+## Route Menghapus File FTP /delete/<path:file_name>:
+Digunakan untuk menghapus file di server FTP
+Dekorator @login_required_custom memastikan bahwa pengguna sudah masuk sebelum mengakses rute ini.
+Fungsi login_ftp digunakan untuk membentuk koneksi FTP menggunakan kredensial yang disimpan dalam sesi pengguna.
+Jika koneksi FTP berhasil (jika ftp), file tersebut dihapus menggunakan metode ftp.delete().
+Setelah penghapusan berhasil, koneksi FTP ditutup dengan ftp.quit(), dan pengguna diarahkan ulang ke rute ftp_file_list.
+Jika terjadi kesalahan selama proses penghapusan (kecuali ftplib.error_perm), pesan kesalahan dirender menggunakan template ftp_file_list.html.
+
+## Route Mengubah Nama File FTP /rename/<path:file_name>:
+Digunakan untuk mengubah nama file di server FTP
+Dekorator @login_required_custom memastikan bahwa pengguna sudah masuk sebelum mengakses rute ini.
+Fungsi login_ftp digunakan untuk membentuk koneksi FTP menggunakan kredensial yang disimpan dalam sesi pengguna.
+Jika metode permintaan adalah POST, nama baru untuk file diambil dari data formulir (request.form.get('new_name')), dan file tersebut diubah namanya menggunakan metode ftp.rename().
+Setelah pengubahan nama berhasil, koneksi FTP ditutup dengan ftp.quit(), dan pengguna diarahkan ulang ke rute ftp_file_list.
+Jika terjadi kesalahan selama proses pengubahan nama (kecuali ftplib.error_perm), pesan kesalahan dirender menggunakan template rename_file.html.
+Jika metode permintaan adalah GET, pengguna diberikan template rename_file.html dengan parameter file_name, di mana mereka dapat memasukkan nama baru untuk file tersebut.
 
 ## Menjalankan Aplikasi:
 *if __name__ == '__main__'8*: app.run(debug=True): Memastikan bahwa aplikasi hanya dijalankan ketika dijalankan secara langsung (bukan diimpor sebagai modul).
