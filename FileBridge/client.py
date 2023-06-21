@@ -9,12 +9,27 @@ from flask import render_template
 app = Flask(__name__)
 app.secret_key = "123test"
 
-# Konfigurasi FTP
-# ftp_host = '127.0.0.1'
-# ftp_user = 'test'
-# ftp_password = '123'
-# ftp_port = 2121
-# session["ftp"] = None
+# Route setelah mengunggah file
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        session["host"] = str(request.form["host"])
+        session["user"] = str(request.form["user"])
+        session["password"] = str(request.form["password"])
+        session["port"] = int(request.form["port"])
+        
+        # for i in session:
+        #     print(session[i])
+        
+        ftp = login_ftp(session["host"],session["port"],session["user"],session["password"])
+        
+        if ftp is None :
+            error_message = "Failed to establish FTP connection. Please check your credentials."
+            return render_template('login.html', error_message=error_message)
+        else: 
+            return redirect(url_for("index"))
+        
+    return render_template('login.html')
 
 def login_ftp(host,port,user,password):
     ftp = FTP()
@@ -50,6 +65,27 @@ def login_required_custom(f):
         return f(*args, **kwargs)
     return decorated_function
 
+# Route utama
+@app.route('/', methods=['GET', 'POST'])
+@login_required_custom
+def index():
+    # session.clear()
+    if request.method == 'POST':
+        if 'upload_file' in request.files:
+            file = request.files['upload_file']
+            if file.filename == '':
+                return render_template('index.html', error_message='Mohon pilih file yang ingin diunggah')
+            upload_file(file)
+            return render_template('uploaded.html')
+        elif 'download_file' in request.form:
+            file_name = request.form['download_file']
+            if file_name == '':
+                return render_template('index.html', error_message='Mohon masukkan nama file yang ingin diunduh')
+            return redirect('/download/{}'.format(file_name))
+
+    file_list = get_file_list()
+    return render_template('index.html', file_list=file_list)
+
 # Fungsi untuk mengupload file ke server FTP
 def upload_file(file):
     ftp = login_ftp(session["host"],session["port"],session["user"],session["password"])
@@ -64,6 +100,12 @@ def upload_file(file):
         ftp.quit()
     else :
         return render_template('index.html', error_message='Terjadi kesalahan pada saat login')
+    
+# Route unduhan file
+@app.route('/download/<path:file_name>')
+def download(file_name):
+    file_data = download_file(file_name)
+    return app.response_class(file_data, mimetype='application/octet-stream', direct_passthrough=True)
 
 # Fungsi untuk mengunduh file dari server FTP
 def download_file(file_name):
@@ -101,60 +143,10 @@ def get_current_path():
     current_path = ftp.pwd()
     return current_path
 
-# Route utama
-@app.route('/', methods=['GET', 'POST'])
-@login_required_custom
-def index():
-    # session.clear()
-    if request.method == 'POST':
-        if 'upload_file' in request.files:
-            file = request.files['upload_file']
-            if file.filename == '':
-                return render_template('index.html', error_message='Mohon pilih file yang ingin diunggah')
-            upload_file(file)
-            return render_template('uploaded.html')
-        elif 'download_file' in request.form:
-            file_name = request.form['download_file']
-            if file_name == '':
-                return render_template('index.html', error_message='Mohon masukkan nama file yang ingin diunduh')
-            file_data = download_file(file_name)
-            return redirect('/download/{}'.format(file_name))
-
-    file_list = get_file_list()
-    return render_template('index.html', file_list=file_list)
-
-# Route unduhan file
-@app.route('/download/<path:file_name>')
-def download(file_name):
-    file_data = download_file(file_name)
-    return app.response_class(file_data, mimetype='application/octet-stream', direct_passthrough=True)
-
 # Route setelah mengunggah file
 @app.route('/uploaded')
 def uploaded():
     return render_template('uploaded.html')
-
-# Route setelah mengunggah file
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        session["host"] = str(request.form["host"])
-        session["user"] = str(request.form["user"])
-        session["password"] = str(request.form["password"])
-        session["port"] = int(request.form["port"])
-        
-        # for i in session:
-        #     print(session[i])
-        
-        ftp = login_ftp(session["host"],session["port"],session["user"],session["password"])
-        
-        if ftp is None :
-            error_message = "Failed to establish FTP connection. Please check your credentials."
-            return render_template('login.html', error_message=error_message)
-        else: 
-            return redirect(url_for("index"))
-        
-    return render_template('login.html')
 
 # Route ingin melihat file list
 @app.route('/ftp')
